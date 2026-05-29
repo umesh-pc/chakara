@@ -1,0 +1,78 @@
+<%- include('partials/header') %>
+
+<!-- Page Header -->
+<section class="bg-dark text-white py-5 position-relative border-bottom border-gold" style="border-color: var(--primary-gold) !important; background: linear-gradient(rgba(26,26,26,0.85), rgba(26,26,26,0.85)), url('/images/statue_repainting_work.png') center/cover;">
+  <div class="container py-5 text-center fade-in-section">
+    <span class="text-uppercase text-gold" style="color: var(--primary-gold); letter-spacing: 2px; font-size: 0.85rem;">Pristine Ecclesiastical Restorations</span>
+    <h1 class="display-4 mt-2" style="font-weight: 800;">Restored Statues Showcase</h1>
+    <p class="lead col-md-6 mx-auto mt-3 text-light-50" style="font-weight: 300; font-size: 1.1rem;">
+      Witness the meticulous transformations and repainting of weathered, chipped, and fading church statues. Use the slider handle on each image to compare before and after.
+    </p>
+  </div>
+</section>
+
+<!-- Showcase Grid -->
+<section class="container py-5 my-3">
+  <% if (restorations && restorations.length > 0) { %>
+    <div class="row g-5">
+      <% restorations.forEach(restoration => { %>
+        <div class="col-md-6 col-lg-6 mb-4 fade-in-section">
+          <div class="restoration-card border bg-white p-4 h-100 shadow-sm" style="border-color: rgba(197, 168, 92, 0.2) !important;">
+            
+            <!-- Before / After Slider -->
+            <div class="ba-slider-container mb-4">
+              <div class="ba-slider" data-ba-slider>
+                
+                <!-- After Image (Base) -->
+                <img src="<%= restoration.imageAfter %>" alt="<%= restoration.title %> - After" class="ba-image-after">
+                
+                <!-- Before Image (Overlay Wrapper) -->
+                <div class="ba-image-before-wrapper" data-ba-before-wrapper>
+                  <img src="<%= restoration.imageBefore %>" alt="<%= restoration.title %> - Before" class="ba-image-before">
+                </div>
+                
+                <!-- Slide Handle -->
+                <div class="ba-handle" data-ba-handle>
+                  <div class="ba-handle-line"></div>
+                  <div class="ba-handle-button">
+                    <i class="fa-solid fa-arrows-left-right text-dark"></i>
+                  </div>
+                  <div class="ba-handle-line"></div>
+                </div>
+                
+                <!-- Badges -->
+                <span class="ba-label ba-label-before">Before</span>
+                <span class="ba-label ba-label-after">After</span>
+                
+              </div>
+            </div>
+            
+            <!-- Restoration Info -->
+            <h3 style="font-family: var(--font-serif); font-weight: 700; color: var(--text-dark);" class="mb-2"><%= restoration.title %></h3>
+            <p class="text-secondary" style="font-size: 0.95rem; line-height: 1.6;"><%= restoration.description || 'No detailed description provided.' %></p>
+            
+            <!-- Action Button for Inquiry -->
+            <div class="mt-4 pt-3 border-top" style="border-color: #f1ebd9 !important;">
+              <a href="https://wa.me/<%= whatsappNum %>?text=Hi%2C%20I%20am%20interested%20in%20a%20restoration%2Frepainting%20service%20similar%20to%3A%20<%= encodeURIComponent(restoration.title) %>" target="_blank" class="btn btn-whatsapp btn-sm px-4">
+                <i class="fa-brands fa-whatsapp me-2"></i>Inquire About This Service
+              </a>
+            </div>
+            
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <!-- Empty Restorations Showcase -->
+    <div class="text-center py-5 border bg-white p-5 fade-in-section" style="border-color: rgba(197, 168, 92, 0.2) !important;">
+      <i class="fa-solid fa-screwdriver-wrench text-muted mb-3" style="font-size: 3rem;"></i>
+      <h3 style="font-family: var(--font-serif);">No Restorations Seeded Yet</h3>
+      <p class="text-secondary col-md-6 mx-auto mt-2">
+        Our workshop is actively preparing digital before-and-after portfolios. Check back soon or contact us to see offline restoration catalogs.
+      </p>
+      <a href="/" class="btn btn-gold mt-3">Back to Home</a>
+    </div>
+  <% } %>
+</section>
+
+<%- include('partials/footer') %>

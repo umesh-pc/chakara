@@ -1,0 +1,95 @@
+<%- include('partials/header') %>
+
+<!-- Alerts -->
+<% if (error) { %>
+  <div class="alert alert-danger alert-dismissible fade show rounded-1 mb-4" role="alert">
+    <i class="fa-solid fa-circle-exclamation me-2"></i><%= error %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<% if (success) { %>
+  <div class="alert alert-success alert-dismissible fade show rounded-1 mb-4" role="alert">
+    <i class="fa-solid fa-circle-check me-2"></i><%= success %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<div class="row g-4">
+  
+  <!-- Add Category Form (Left Column) -->
+  <div class="col-lg-4">
+    <div class="form-card py-4 px-4 h-100">
+      <h5 class="mb-4 text-dark" style="font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Add New Category</h5>
+      <form action="/admin/categories" method="POST">
+        
+        <div class="mb-3">
+          <label for="name" class="form-label">Category Name</label>
+          <input type="text" class="form-control rounded-1" id="name" name="name" required placeholder="e.g. Jesus Statues">
+        </div>
+        
+        <div class="mb-4">
+          <label for="description" class="form-label">Description (Optional)</label>
+          <textarea class="form-control rounded-1" id="description" name="description" rows="4" placeholder="Describe the statue category..."></textarea>
+        </div>
+        
+        <button type="submit" class="btn btn-primary w-100 py-2.5 rounded-1" style="background-color: var(--sidebar-bg); border-color: var(--sidebar-bg); font-weight: 600;">
+          <i class="fa-solid fa-plus me-1"></i> Add Category
+        </button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Categories Directory (Right Column) -->
+  <div class="col-lg-8">
+    <div class="table-card h-100 mb-0">
+      <div class="card-header-custom py-3 px-4">
+        <h5 class="mb-0">Categories Directory</h5>
+      </div>
+      
+      <div class="table-responsive">
+        <% if (categories && categories.length > 0) { %>
+          <table class="table admin-table align-middle">
+            <thead>
+              <tr>
+                <th>Category Name</th>
+                <th>URL Slug</th>
+                <th>Description</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% categories.forEach(cat => { %>
+                <tr>
+                  <td>
+                    <strong><%= cat.name %></strong>
+                  </td>
+                  <td>
+                    <code><%= cat.slug %></code>
+                  </td>
+                  <td class="text-secondary small" style="max-width: 200px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                    <%= cat.description || '-' %>
+                  </td>
+                  <td>
+                    <form action="/admin/categories/delete/<%= cat._id %>" method="POST" class="delete-confirm-form" data-item-type="category">
+                      <button type="submit" class="btn btn-sm btn-outline-danger px-2.5" title="Delete Category">
+                        <i class="fa-solid fa-trash-can"></i> Delete
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <div class="text-center py-5">
+            <p class="text-secondary mb-0">No categories found. Add one on the left!</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<%- include('partials/footer') %>

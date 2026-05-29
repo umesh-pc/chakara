@@ -1,0 +1,125 @@
+<%- include('partials/header') %>
+
+<!-- Details Container -->
+<section class="container py-5 my-3">
+  
+  <!-- Breadcrumbs / Back button -->
+  <div class="mb-4">
+    <a href="/products" class="btn btn-outline-secondary btn-sm rounded-0" style="border-color: #f1ebd9; font-size: 0.8rem;">
+      <i class="fa-solid fa-arrow-left me-2"></i> Back to Collections
+    </a>
+  </div>
+
+  <div class="row g-5">
+    
+    <!-- Image Gallery (Left Column) -->
+    <div class="col-lg-6">
+      <div class="mb-3">
+        <img id="main-product-img" src="<%= product.images[0] %>" alt="<%= product.productName %>" class="detail-img-main img-fluid">
+      </div>
+      
+      <!-- Thumbnail Selector -->
+      <% if (product.images && product.images.length > 1) { %>
+        <div class="row g-2">
+          <% product.images.forEach((img, idx) => { %>
+            <div class="col-3">
+              <img src="<%= img %>" 
+                   class="detail-img-thumbnail img-fluid <%= idx === 0 ? 'active' : '' %>" 
+                   data-image="<%= img %>" 
+                   alt="<%= product.productName %> - Thumbnail <%= idx + 1 %>">
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+    
+    <!-- Product details (Right Column) -->
+    <div class="col-lg-6">
+      <span class="text-uppercase text-gold" style="color: var(--primary-gold); letter-spacing: 2px; font-weight: 600; font-size: 0.85rem;">
+        <%= product.category.name %>
+      </span>
+      <h1 class="mt-2 mb-3" style="font-family: var(--font-serif); font-size: 2.5rem; font-weight: 700; color: var(--text-dark);">
+        <%= product.productName %>
+      </h1>
+      
+      <hr style="border-color: #f1ebd9; opacity: 1; margin: 25px 0;">
+      
+      <div class="mb-4">
+        <h5 style="font-family: var(--font-serif); font-weight: 600; color: var(--primary-gold-dark);">Description</h5>
+        <p class="text-secondary" style="line-height: 1.8; white-space: pre-line;">
+          <%= product.description %>
+        </p>
+      </div>
+      
+      <div class="mb-4 py-3 px-4 border" style="background-color: var(--bg-pure-white); border-color: #f1ebd9 !important;">
+        <h6 class="mb-2 text-gold" style="font-family: var(--font-serif); font-weight: 600; color: var(--primary-gold-dark); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">Available Sizes (Heights)</h6>
+        <div class="d-flex flex-wrap gap-2">
+          <% product.size.forEach(sz => { %>
+            <span class="badge rounded-pill bg-light text-dark border px-3 py-2" style="font-size: 0.8rem; font-weight: 500;">
+              <i class="fa-solid fa-ruler-vertical text-gold me-1" style="color: var(--primary-gold);"></i><%= sz.value %>
+            </span>
+          <% }) %>
+        </div>
+      </div>
+      
+      <div class="alert alert-warning border-0 rounded-0 p-3 mb-4" style="background-color: rgba(197, 168, 92, 0.1); border-left: 4px solid var(--primary-gold) !important;">
+        <p class="mb-0 text-secondary" style="font-size: 0.85rem;">
+          <i class="fa-solid fa-circle-info text-gold me-2" style="color: var(--primary-gold);"></i> 
+          Price is not displayed online. Please submit an inquiry below via WhatsApp or call us directly to get current pricing and options.
+        </p>
+      </div>
+      
+      <div class="row g-3">
+        <div class="col-sm-6">
+          <a href="https://wa.me/<%= whatsappNum %>?text=Hi%2C%20I%20am%20interested%20in%20inquiring%20about%20the%20statue%3A%20<%= encodeURIComponent(product.productName) %>" 
+             target="_blank" 
+             class="btn btn-whatsapp w-100 py-3 d-flex align-items-center justify-content-center">
+            <i class="fa-brands fa-whatsapp me-2 fs-5"></i> Send Inquiry on WhatsApp
+          </a>
+        </div>
+        <div class="col-sm-6">
+          <a href="tel:<%= phoneNum %>" class="btn btn-call w-100 py-3 d-flex align-items-center justify-content-center">
+            <i class="fa-solid fa-phone me-2 fs-6"></i> Call Now: <%= phoneNum %>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</section>
+
+<!-- Related Products Section -->
+<section class="border-top" style="border-color: #f1ebd9 !important; background-color: var(--bg-pure-white);">
+  <div class="container py-5 my-3">
+    <div class="text-center mb-5">
+      <h3 style="font-family: var(--font-serif); font-weight: 700;">Similar Statues</h3>
+      <p class="text-secondary" style="font-size: 0.9rem;">You may also like to view these items in <%= product.category.name %>.</p>
+    </div>
+    
+    <div class="row">
+      <% if (relatedProducts && relatedProducts.length > 0) { %>
+        <% relatedProducts.forEach(rel => { %>
+          <div class="col-md-3 col-6">
+            <div class="product-card h-100">
+              <div class="product-img-wrapper" style="padding-top: 110%;">
+                <img src="<%= rel.images[0] %>" alt="<%= rel.productName %>">
+              </div>
+              <div class="product-body p-3">
+                <h5 class="product-title mb-2" style="font-size: 0.95rem; font-weight: 600;"><%= rel.productName %></h5>
+                <div class="product-footer d-flex gap-2 p-0 border-0 mt-2">
+                  <a href="/product/<%= rel.slug %>" class="btn btn-gold btn-sm w-100 py-1" style="font-size: 0.75rem;">View</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <div class="text-center text-muted">
+          <p>No similar items available in this category.</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

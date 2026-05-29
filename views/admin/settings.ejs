@@ -1,0 +1,106 @@
+<%- include('partials/header') %>
+
+<!-- Form Title and Return button -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0 text-dark" style="font-weight: 700;">Workshop & Contact Settings</h4>
+  <a href="/admin/dashboard" class="btn btn-outline-secondary btn-sm rounded-1">
+    <i class="fa-solid fa-gauge me-1"></i> Dashboard Overview
+  </a>
+</div>
+
+<!-- Alert Notifications -->
+<% if (error) { %>
+  <div class="alert alert-danger alert-dismissible fade show rounded-1 mb-4" role="alert">
+    <i class="fa-solid fa-circle-exclamation me-2"></i><%= error %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<% if (success) { %>
+  <div class="alert alert-success alert-dismissible fade show rounded-1 mb-4" role="alert">
+    <i class="fa-solid fa-circle-check me-2"></i><%= success %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<!-- Settings Form Card -->
+<div class="form-card py-4 px-4 bg-white border rounded shadow-sm" style="border-color: rgba(197, 168, 92, 0.15) !important;">
+  <form action="/admin/settings" method="POST">
+    <div class="row g-4">
+      
+      <h5 class="text-secondary fw-semibold border-bottom pb-2 mb-0">Contact & Support Details</h5>
+      
+      <!-- WhatsApp Support -->
+      <div class="col-md-6">
+        <label for="whatsappNum" class="form-label fw-bold text-dark">WhatsApp Number (URL format)</label>
+        <input type="text" class="form-control rounded-1" id="whatsappNum" name="whatsappNum" value="<%= settings.whatsappNum %>" required placeholder="e.g. 919446577541">
+        <div class="form-text text-muted">Enter digits only, including country code (no spaces, plus signs, or hyphens). Example: <code>919446577541</code>.</div>
+      </div>
+      
+      <!-- Call Support -->
+      <div class="col-md-6">
+        <label for="phoneNum" class="form-label fw-bold text-dark">Voice Call Number (Display format)</label>
+        <input type="text" class="form-control rounded-1" id="phoneNum" name="phoneNum" value="<%= settings.phoneNum %>" required placeholder="e.g. +91 94465 77541">
+        <div class="form-text text-muted">Formatted voice number shown to clients. Example: <code>+91 94465 77541</code>.</div>
+      </div>
+      
+      <!-- Email Address -->
+      <div class="col-md-12">
+        <label for="emailAddr" class="form-label fw-bold text-dark">Public Email Address</label>
+        <input type="email" class="form-control rounded-1" id="emailAddr" name="emailAddr" value="<%= settings.emailAddr %>" required placeholder="e.g. info@chakraart.com">
+      </div>
+
+      <h5 class="text-secondary fw-semibold border-bottom pb-2 mb-0 mt-5">Location & Address Settings</h5>
+      
+      <!-- Workshop Address -->
+      <div class="col-12">
+        <label for="address" class="form-label fw-bold text-dark">Workshop Physical Address</label>
+        <textarea class="form-control rounded-1" id="address" name="address" rows="3" required placeholder="Workshop address..."><%= settings.address %></textarea>
+        <div class="form-text text-muted">Enter the complete address. Use commas and details for clean template rendering.</div>
+      </div>
+
+      <!-- Google Map Embed URL -->
+      <div class="col-12 mt-3">
+        <label for="mapEmbedUrl" class="form-label fw-bold text-dark">Google Map Embed URL</label>
+        <textarea class="form-control rounded-1" id="mapEmbedUrl" name="mapEmbedUrl" rows="2" placeholder="Google Maps iframe src link..."><%= settings.mapEmbedUrl || '' %></textarea>
+        <div class="form-text text-muted">Go to Google Maps -> Share -> Embed a map, and copy only the <code>src="..."</code> link. Example: <code>https://www.google.com/maps/embed?pb=...</code></div>
+      </div>
+
+      <h5 class="text-secondary fw-semibold border-bottom pb-2 mb-0 mt-5">Workshop Business Hours</h5>
+      
+      <!-- Working Days -->
+      <div class="col-md-4">
+        <label for="workingDays" class="form-label fw-bold text-dark">Working Days in a Week</label>
+        <input type="text" class="form-control rounded-1" id="workingDays" name="workingDays" value="<%= settings.workingDays %>" required placeholder="e.g. Mon - Sat">
+        <div class="form-text text-muted">Active workdays description. Example: <code>Mon - Sat</code> or <code>Monday - Friday</code>.</div>
+      </div>
+
+      <!-- Opening Time -->
+      <div class="col-md-4">
+        <label for="openingTime" class="form-label fw-bold text-dark">Opening Time</label>
+        <input type="text" class="form-control rounded-1" id="openingTime" name="openingTime" value="<%= settings.openingTime %>" required placeholder="e.g. 9:00 AM">
+        <div class="form-text text-muted">Example: <code>9:00 AM</code>.</div>
+      </div>
+      
+      <!-- Closing Time -->
+      <div class="col-md-4">
+        <label for="closingTime" class="form-label fw-bold text-dark">Closing Time</label>
+        <input type="text" class="form-control rounded-1" id="closingTime" name="closingTime" value="<%= settings.closingTime %>" required placeholder="e.g. 6:00 PM">
+        <div class="form-text text-muted">Example: <code>6:00 PM</code>.</div>
+      </div>
+
+      <!-- Submit buttons -->
+      <div class="col-12 mt-5 border-top pt-4">
+        <button type="submit" class="btn btn-primary px-4 py-2.5 rounded-1" style="background-color: var(--sidebar-bg); border-color: var(--sidebar-bg); font-weight: 600;">
+          <i class="fa-solid fa-floppy-disk me-1"></i> Save Config Settings
+        </button>
+        <a href="/admin/dashboard" class="btn btn-outline-secondary px-4 py-2.5 rounded-1 ms-2">
+          Cancel
+        </a>
+      </div>
+
+    </div>
+  </form>
+</div>
+
+<%- include('partials/footer') %>

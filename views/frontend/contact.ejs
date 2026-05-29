@@ -1,0 +1,142 @@
+<%- include('partials/header') %>
+
+<!-- Page Header -->
+<section class="bg-dark text-white py-4 border-bottom border-gold" style="border-color: var(--primary-gold) !important; background: linear-gradient(rgba(26,26,26,0.85), rgba(26,26,26,0.85)), url('/images/hero_mary_statue.png') center/cover;">
+  <div class="container text-center py-3">
+    <h1 class="mb-0" style="font-weight: 700; font-size: 2.2rem; font-family: var(--font-serif);">Contact Us</h1>
+    <p class="text-white-50 mb-0 mt-2" style="font-size: 0.95rem;">Have an inquiry or custom restoration project? Reach out to our artisans today.</p>
+  </div>
+</section>
+
+<!-- Contact Form & Info -->
+<section class="container py-5 my-3">
+  <div class="row g-5">
+    
+    <!-- Contact Info Cards (Left Column) -->
+    <div class="col-lg-5 fade-in-section">
+      <h3 class="mb-4" style="font-family: var(--font-serif); font-weight: 700;">Get in Touch</h3>
+      <p class="text-secondary mb-4" style="line-height: 1.8;">
+        For pricing, custom statue dimensions, cathedral decoration planning, or repainting quotes, please contact us. We answer inquiries via phone and WhatsApp.
+      </p>
+
+      <div class="d-flex mb-4">
+        <div class="flex-shrink-0 text-gold fs-4" style="color: var(--primary-gold); width: 40px;">
+          <i class="fa-brands fa-whatsapp"></i>
+        </div>
+        <div class="ms-2">
+          <h6 class="mb-1" style="font-family: var(--font-serif); font-weight: 600;">WhatsApp Support</h6>
+          <p class="mb-0"><a href="https://wa.me/<%= whatsappNumber %>" target="_blank" class="text-decoration-none text-secondary">+<%= whatsappNumber %></a></p>
+          <span class="text-muted" style="font-size: 0.8rem;">Click to chat instantly</span>
+        </div>
+      </div>
+
+      <div class="d-flex mb-4">
+        <div class="flex-shrink-0 text-gold fs-4" style="color: var(--primary-gold); width: 40px;">
+          <i class="fa-solid fa-phone"></i>
+        </div>
+        <div class="ms-2">
+          <h6 class="mb-1" style="font-family: var(--font-serif); font-weight: 600;">Call Us</h6>
+          <p class="mb-0"><a href="tel:<%= phoneNumber %>" class="text-decoration-none text-secondary"><%= phoneNumber %></a></p>
+          <span class="text-muted" style="font-size: 0.8rem;"><%= workingDays %>, <%= openingTime %> - <%= closingTime %></span>
+        </div>
+      </div>
+
+      <div class="d-flex mb-4">
+        <div class="flex-shrink-0 text-gold fs-4" style="color: var(--primary-gold); width: 40px;">
+          <i class="fa-solid fa-envelope"></i>
+        </div>
+        <div class="ms-2">
+          <h6 class="mb-1" style="font-family: var(--font-serif); font-weight: 600;">Email Address</h6>
+          <p class="mb-0"><a href="mailto:<%= emailAddress %>" class="text-decoration-none text-secondary"><%= emailAddress %></a></p>
+        </div>
+      </div>
+
+      <div class="d-flex mb-4">
+        <div class="flex-shrink-0 text-gold fs-4" style="color: var(--primary-gold); width: 40px;">
+          <i class="fa-solid fa-location-dot"></i>
+        </div>
+        <div class="ms-2">
+          <h6 class="mb-1" style="font-family: var(--font-serif); font-weight: 600;">Our Workshop Address</h6>
+          <p class="text-secondary mb-0">
+            <%- address.replace(/\r\n|\n/g, '<br>') %>
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Contact Form (Right Column) -->
+    <div class="col-lg-7 fade-in-section">
+      <div class="p-4 border bg-white rounded-0" style="border-color: #f1ebd9 !important; box-shadow: var(--card-shadow);">
+        <h3 class="mb-4" style="font-family: var(--font-serif); font-weight: 700;">Send us an Inquiry</h3>
+        
+        <form id="whatsapp-inquiry-form">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="clientName" class="form-label">Full Name</label>
+              <input type="text" class="form-control rounded-0" id="clientName" required placeholder="John Doe">
+            </div>
+            <div class="col-md-6">
+              <label for="clientEmail" class="form-label">Email Address</label>
+              <input type="email" class="form-control rounded-0" id="clientEmail" required placeholder="john@example.com">
+            </div>
+            <div class="col-12">
+              <label for="inquirySubject" class="form-label">Subject</label>
+              <input type="text" class="form-control rounded-0" id="inquirySubject" required placeholder="e.g. Restoring 4ft Mary Statue">
+            </div>
+            <div class="col-12">
+              <label for="clientMessage" class="form-label">Message details</label>
+              <textarea class="form-control rounded-0" id="clientMessage" rows="5" required placeholder="Describe the statue style, height, quantities or painting requirements..."></textarea>
+            </div>
+            <div class="col-12 mt-4">
+              <button type="submit" class="btn btn-whatsapp w-100 py-3 rounded-0">
+                <i class="fa-brands fa-whatsapp me-2 fs-5"></i> Submit & Chat on WhatsApp
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+  </div>
+</section>
+
+<!-- Google Map section -->
+<section class="container-fluid px-0 border-top border-gold" style="border-color: var(--primary-gold) !important;">
+  <div style="height: 400px; width: 100%;">
+    <iframe 
+      src="<%= mapEmbedUrl %>" 
+      width="100%" 
+      height="100%" 
+      style="border:0;" 
+      allowfullscreen="" 
+      loading="lazy" 
+      referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+  </div>
+</section>
+
+<!-- Inline script for contact page WhatsApp routing -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('whatsapp-inquiry-form');
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('clientName').value;
+        const email = document.getElementById('clientEmail').value;
+        const subject = document.getElementById('inquirySubject').value;
+        const msg = document.getElementById('clientMessage').value;
+        
+        const prefilledText = `Hi Chakra Art Industries,\n\nI have a product inquiry:\n\n*Name:* ${name}\n*Email:* ${email}\n*Subject:* ${subject}\n*Message:* ${msg}`;
+        
+        const encodedText = encodeURIComponent(prefilledText);
+        const whatsappUrl = `https://wa.me/<%= whatsappNumber %>?text=${encodedText}`;
+        
+        window.open(whatsappUrl, '_blank');
+      });
+    }
+  });
+</script>
+
+<%- include('partials/footer') %>

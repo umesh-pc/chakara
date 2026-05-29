@@ -1,0 +1,20 @@
+<%- include('partials/header') %>
+
+<section class="container py-5 my-5 text-center fade-in-section">
+  <div class="py-5 bg-white border border-gold" style="border-color: rgba(197, 168, 92, 0.2) !important; box-shadow: var(--card-shadow);">
+    <div class="mb-4 text-gold" style="color: var(--primary-gold); font-size: 5rem;">
+      <i class="fa-solid fa-church"></i>
+    </div>
+    <h1 class="display-3 gold-gradient-text" style="font-weight: 800; font-family: var(--font-serif);">404</h1>
+    <h3 class="mb-3" style="font-family: var(--font-serif); font-weight: 600;">Statue or Page Not Found</h3>
+    <p class="text-secondary col-md-6 mx-auto mb-4" style="line-height: 1.8;">
+      <%= typeof message !== 'undefined' ? message : "The specific page, image, or statue catalog item you are looking for does not exist, has been removed, or is temporarily offline." %>
+    </p>
+    <div class="d-flex justify-content-center gap-3">
+      <a href="/" class="btn btn-burgundy px-4">Back to Home</a>
+      <a href="/products" class="btn btn-gold px-4">View Collections</a>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

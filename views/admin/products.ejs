@@ -1,0 +1,96 @@
+<%- include('partials/header') %>
+
+<!-- Header and Alerts -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0 text-dark" style="font-weight: 700;">Catalog Directory</h4>
+  <a href="/admin/products/new" class="btn btn-primary rounded-1" style="background-color: var(--sidebar-bg); border-color: var(--sidebar-bg);">
+    <i class="fa-solid fa-plus me-1"></i> Add New Statue
+  </a>
+</div>
+
+<% if (error) { %>
+  <div class="alert alert-danger alert-dismissible fade show rounded-1 mb-4" role="alert">
+    <i class="fa-solid fa-circle-exclamation me-2"></i><%= error %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<!-- Products Table -->
+<div class="table-card">
+  <div class="table-responsive">
+    <% if (products && products.length > 0) { %>
+      <table class="table admin-table align-middle">
+        <thead>
+          <tr>
+            <th>Preview</th>
+            <th>Statue Name</th>
+            <th>Category</th>
+            <th>Heights</th>
+            <th>Featured Status</th>
+            <th>Uploaded Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% products.forEach(product => { %>
+            <tr>
+              <td>
+                <img src="<%= product.images[0] %>" alt="<%= product.productName %>" class="rounded animate-hover-scale" style="width: 50px; height: 60px; object-fit: cover; border: 1px solid var(--border-color);">
+              </td>
+              <td>
+                <div class="fw-bold"><%= product.productName %></div>
+                <div class="text-secondary small" style="max-width: 250px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                  <%= product.description %>
+                </div>
+              </td>
+              <td>
+                <span class="badge bg-light text-dark border"><%= product.category.name %></span>
+              </td>
+              <td>
+                <div class="d-flex flex-wrap gap-1" style="max-width: 150px;">
+                  <% product.size.forEach(sz => { %>
+                    <span class="badge bg-secondary-subtle text-secondary border" style="font-size: 0.7rem;"><%= sz.value %></span>
+                  <% }) %>
+                </div>
+              </td>
+              <td>
+                <form action="/admin/products/toggle-featured/<%= product._id %>" method="POST">
+                  <button type="submit" class="btn btn-sm <%= product.featured ? 'btn-success bg-success-subtle text-success' : 'btn-outline-secondary text-secondary bg-light' %> border rounded-5 px-3 py-0.5" style="font-size: 0.75rem;">
+                    <% if (product.featured) { %>
+                      <i class="fa-solid fa-circle-check me-1"></i> Featured
+                    <% } else { %>
+                      <i class="fa-regular fa-circle me-1"></i> Standard
+                    <% } %>
+                  </button>
+                </form>
+              </td>
+              <td class="text-secondary" style="font-size: 0.85rem;">
+                <%= new Date(product.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %>
+              </td>
+              <td>
+                <div class="d-flex gap-2">
+                  <a href="/admin/products/edit/<%= product._id %>" class="btn btn-sm btn-outline-secondary px-2.5" title="Edit Product">
+                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                  </a>
+                  <form action="/admin/products/delete/<%= product._id %>" method="POST" class="delete-confirm-form" data-item-type="product">
+                    <button type="submit" class="btn btn-sm btn-outline-danger px-2.5" title="Delete Product">
+                      <i class="fa-solid fa-trash-can"></i> Delete
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="text-center py-5">
+        <i class="fa-solid fa-church text-muted mb-3" style="font-size: 3rem;"></i>
+        <h5 class="text-secondary mb-0">No statues in database catalog.</h5>
+        <p class="text-muted small mt-2">Click "Add New Statue" to register products.</p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,139 @@
+<%- include('partials/header') %>
+
+<!-- Page Title -->
+<section class="bg-dark text-white py-4 border-bottom border-gold" style="border-color: var(--primary-gold) !important; background: linear-gradient(rgba(26,26,26,0.85), rgba(26,26,26,0.85)), url('/images/hero_jesus_statue.png') center/cover;">
+  <div class="container text-center py-3">
+    <h1 class="mb-0" style="font-weight: 700; font-size: 2.2rem; font-family: var(--font-serif);">Statues & Figures Showcase</h1>
+    <p class="text-white-50 mb-0 mt-2" style="font-size: 0.95rem;">Browse through our hand-crafted, high-quality Christian statues and restoration works.</p>
+  </div>
+</section>
+
+<!-- Main Products Section -->
+<div class="container py-5">
+  <div class="row">
+    
+    <!-- Sidebar Filters -->
+    <div class="col-lg-3">
+      <!-- Search Widget -->
+      <div class="filter-card rounded-0">
+        <h5 class="filter-title">Search</h5>
+        <form action="/products" method="GET">
+          <% if (categoryFilter) { %>
+            <input type="hidden" name="category" value="<%= categoryFilter %>">
+          <% } %>
+          <% if (sizeFilter) { %>
+            <input type="hidden" name="size" value="<%= sizeFilter %>">
+          <% } %>
+          <div class="input-group">
+            <input type="text" class="form-control rounded-0" placeholder="Product name..." name="search" value="<%= search %>">
+            <button class="btn btn-gold px-3" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Category Widget -->
+      <div class="filter-card rounded-0">
+        <h5 class="filter-title">Categories</h5>
+        <ul class="filter-list">
+          <li>
+            <a href="/products?<%= sizeFilter ? 'size=' + sizeFilter + '&' : '' %><%= search ? 'search=' + encodeURIComponent(search) : '' %>" class="<%= !categoryFilter ? 'active' : '' %>">
+              <i class="fa-solid fa-chevron-right me-2" style="font-size: 0.7rem;"></i> All Categories
+            </a>
+          </li>
+          <% categories.forEach(cat => { %>
+            <li>
+              <a href="/products?category=<%= cat.slug %><%= sizeFilter ? '&size=' + sizeFilter : '' %><%= search ? '&search=' + encodeURIComponent(search) : '' %>" class="<%= categoryFilter === cat.slug ? 'active' : '' %>">
+                <i class="fa-solid fa-chevron-right me-2" style="font-size: 0.7rem;"></i> <%= cat.name %>
+              </a>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+
+      <!-- Size Widget -->
+      <div class="filter-card rounded-0">
+        <h5 class="filter-title">Sizes</h5>
+        <ul class="filter-list">
+          <li>
+            <a href="/products?<%= categoryFilter ? 'category=' + categoryFilter + '&' : '' %><%= search ? 'search=' + encodeURIComponent(search) : '' %>" class="<%= !sizeFilter ? 'active' : '' %>">
+              <i class="fa-solid fa-chevron-right me-2" style="font-size: 0.7rem;"></i> All Sizes
+            </a>
+          </li>
+          <% sizes.forEach(sz => { %>
+            <li>
+              <a href="/products?size=<%= sz.value %><%= categoryFilter ? '&category=' + categoryFilter : '' %><%= search ? '&search=' + encodeURIComponent(search) : '' %>" class="<%= sizeFilter === sz.value ? 'active' : '' %>">
+                <i class="fa-solid fa-chevron-right me-2" style="font-size: 0.7rem;"></i> <%= sz.value %>
+              </a>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+
+      <!-- Reset Filters Button -->
+      <% if (categoryFilter || sizeFilter || search) { %>
+        <a href="/products" class="btn btn-burgundy w-100 mb-4 rounded-0 py-2">
+          <i class="fa-solid fa-filter-circle-xmark me-2"></i> Clear All Filters
+        </a>
+      <% } %>
+    </div>
+    
+    <!-- Products Catalog Grid -->
+    <div class="col-lg-9">
+      <!-- Active filters description -->
+      <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <span class="text-secondary" style="font-size: 0.9rem;">
+          Showing <strong><%= products.length %></strong> statue(s)
+          <% if (activeCategory) { %> under category <strong><%= activeCategory.name %></strong><% } %>
+          <% if (activeSize) { %> in size <strong><%= activeSize.value %></strong><% } %>
+          <% if (search) { %> matching "<strong><%= search %></strong>"<% } %>
+        </span>
+      </div>
+
+      <% if (products && products.length > 0) { %>
+        <div class="row">
+          <% products.forEach(product => { %>
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="product-card h-100">
+                <div class="product-img-wrapper">
+                  <% if (product.featured) { %>
+                    <span class="product-badge">Featured</span>
+                  <% } %>
+                  <img src="<%= product.images[0] %>" alt="<%= product.productName %>">
+                </div>
+                <div class="product-body">
+                  <div class="product-category"><%= product.category.name %></div>
+                  <h4 class="product-title" style="font-size: 1.1rem; line-height: 1.4;"><%= product.productName %></h4>
+                  
+                  <div class="mb-3">
+                    <span class="text-muted d-block mb-1" style="font-size: 0.7rem;">Available Heights:</span>
+                    <% product.size.forEach(sz => { %>
+                      <span class="badge rounded-pill bg-light text-dark border me-1 mb-1" style="font-size: 0.7rem;"><%= sz.value %></span>
+                    <% }) %>
+                  </div>
+                  
+                  <div class="product-footer d-flex gap-2">
+                    <a href="/product/<%= product.slug %>" class="btn btn-gold btn-sm flex-grow-1">View Details</a>
+                    <a href="https://wa.me/<%= whatsappNum %>?text=Hi%2C%20I%20am%20interested%20in%20inquiring%20about%20the%20statue%3A%20<%= encodeURIComponent(product.productName) %>" target="_blank" class="btn btn-whatsapp btn-sm px-3" title="WhatsApp Inquiry"><i class="fa-brands fa-whatsapp"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <!-- No Products Found Page -->
+        <div class="text-center py-5 my-5 border bg-white p-5" style="border-color: rgba(197, 168, 92, 0.2) !important;">
+          <i class="fa-solid fa-magnifying-glass-minus text-muted mb-3" style="font-size: 3rem; color: var(--primary-gold) !important;"></i>
+          <h3 style="font-family: var(--font-serif);">No Statues Found</h3>
+          <p class="text-secondary col-md-8 mx-auto mt-2">
+            We couldn't find any statues matching your specific selection or search. Try clearing filters or searching for another saint or statue type.
+          </p>
+          <a href="/products" class="btn btn-gold mt-3">Reset Filters</a>
+        </div>
+      <% } %>
+    </div>
+    
+  </div>
+</div>
+
+<%- include('partials/footer') %>

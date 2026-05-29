@@ -1,0 +1,143 @@
+<%- include('partials/header') %>
+
+<!-- Statistics Cards -->
+<div class="row g-4 mb-5">
+  
+  <!-- Products -->
+  <div class="col-md-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-info">
+        <h6>Products</h6>
+        <h2><%= productCount %></h2>
+      </div>
+      <div class="stat-icon">
+        <i class="fa-solid fa-church"></i>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Categories -->
+  <div class="col-md-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-info">
+        <h6>Categories</h6>
+        <h2><%= categoryCount %></h2>
+      </div>
+      <div class="stat-icon">
+        <i class="fa-solid fa-tags"></i>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Sizes -->
+  <div class="col-md-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-info">
+        <h6>Size Presets</h6>
+        <h2><%= sizeCount %></h2>
+      </div>
+      <div class="stat-icon">
+        <i class="fa-solid fa-ruler-vertical"></i>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Gallery -->
+  <div class="col-md-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-info">
+        <h6>Gallery Photos</h6>
+        <h2><%= galleryCount %></h2>
+      </div>
+      <div class="stat-icon">
+        <i class="fa-solid fa-images"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Restorations -->
+  <div class="col-md-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-info">
+        <h6>Restorations</h6>
+        <h2><%= restorationCount %></h2>
+      </div>
+      <div class="stat-icon">
+        <i class="fa-solid fa-screwdriver-wrench"></i>
+      </div>
+    </div>
+  </div>
+  
+</div>
+
+<!-- Table: Recent Products -->
+<div class="table-card">
+  <div class="card-header-custom">
+    <h5>Recently Added Statues</h5>
+    <a href="/admin/products/new" class="btn btn-primary btn-sm rounded-1" style="background-color: var(--sidebar-bg); border-color: var(--sidebar-bg);">
+      <i class="fa-solid fa-plus me-1"></i> Add New Product
+    </a>
+  </div>
+  
+  <div class="table-responsive">
+    <% if (recentProducts && recentProducts.length > 0) { %>
+      <table class="table admin-table align-middle">
+        <thead>
+          <tr>
+            <th>Preview</th>
+            <th>Product Name</th>
+            <th>Category</th>
+            <th>Sizes</th>
+            <th>Featured</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% recentProducts.forEach(product => { %>
+            <tr>
+              <td>
+                <img src="<%= product.images[0] %>" alt="<%= product.productName %>" class="rounded" style="width: 45px; height: 55px; object-fit: cover; border: 1px solid var(--border-color);">
+              </td>
+              <td>
+                <strong><%= product.productName %></strong>
+              </td>
+              <td>
+                <span class="badge bg-light text-dark border"><%= product.category.name %></span>
+              </td>
+              <td>
+                <% product.size.forEach(sz => { %>
+                  <span class="badge bg-secondary-subtle text-secondary border me-1" style="font-size: 0.75rem;"><%= sz.value %></span>
+                <% }) %>
+              </td>
+              <td>
+                <% if (product.featured) { %>
+                  <span class="badge bg-success-subtle text-success border px-2.5 py-1">Featured</span>
+                <% } else { %>
+                  <span class="badge bg-light text-secondary border px-2.5 py-1">Standard</span>
+                <% } %>
+              </td>
+              <td>
+                <div class="d-flex gap-2">
+                  <a href="/admin/products/edit/<%= product._id %>" class="btn btn-sm btn-outline-secondary px-2.5" title="Edit">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </a>
+                  <form action="/admin/products/delete/<%= product._id %>" method="POST" class="delete-confirm-form" data-item-type="product">
+                    <button type="submit" class="btn btn-sm btn-outline-danger px-2.5" title="Delete">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="text-center py-5">
+        <p class="text-secondary mb-0">No statues found in database. Start by adding your first product!</p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
