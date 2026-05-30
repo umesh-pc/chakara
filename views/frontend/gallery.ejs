@@ -1,53 +1,61 @@
 <%- include('partials/header') %>
 
-<!-- Page Header -->
-<section class="bg-dark text-white py-4 border-bottom border-gold" style="border-color: var(--primary-gold) !important; background: linear-gradient(rgba(26,26,26,0.85), rgba(26,26,26,0.85)), url('/images/statue_repainting_work.png') center/cover;">
-  <div class="container text-center py-3">
-    <h1 class="mb-0" style="font-weight: 700; font-size: 2.2rem; font-family: var(--font-serif);">Work Showcase Gallery</h1>
-    <p class="text-white-50 mb-0 mt-2" style="font-size: 0.95rem;">Take a look at our completed installations, hand carvings, and statue repainting projects.</p>
-  </div>
-</section>
+  <!-- Page Header -->
+  <section class="bg-dark text-white py-4 border-bottom border-gold"
+    style="border-color: var(--primary-gold) !important; background: linear-gradient(rgba(26,26,26,0.85), rgba(26,26,26,0.85)), url('/images/statue_repainting_work.png') center/cover;">
+    <div class="container text-center py-3">
+      <h1 class="mb-0" style="font-weight: 700; font-size: 2.2rem; font-family: var(--font-serif);">Work Showcase
+        Gallery</h1>
+      <p class="text-white-50 mb-0 mt-2" style="font-size: 0.95rem;">Take a look at our completed installations and
+        statue repainting projects.</p>
+    </div>
+  </section>
 
-<!-- Gallery Section -->
-<section class="container py-5 my-3">
-  <% if (galleryItems && galleryItems.length > 0) { %>
-    <div class="row g-4">
-      <% galleryItems.forEach(item => { %>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-          <a href="#" class="gallery-lightbox-trigger text-decoration-none" 
-             data-image="<%= item.imagePath %>" 
-             data-title="<%= item.title %>" 
-             data-description="<%= item.description %>">
-            <div class="gallery-grid-item">
-              <img src="<%= item.imagePath %>" alt="<%= item.title || 'Chakra Art Industries Gallery' %>">
-              <div class="gallery-hover-overlay">
-                <i class="fa-solid fa-magnifying-glass-plus mb-2 fs-3 text-gold" style="color: var(--primary-gold);"></i>
-                <h5 class="mb-1" style="font-family: var(--font-serif);"><%= item.title %></h5>
-                <p class="small text-white-50 mb-0"><%= item.description ? item.description.substring(0, 50) + '...' : '' %></p>
+  <!-- Gallery Section -->
+  <section class="container py-5 my-3">
+    <% if (galleryItems && galleryItems.length> 0) { %>
+      <div class="row g-4">
+        <% galleryItems.forEach(item=> { %>
+          <div class="col-sm-6 col-md-4 col-lg-3">
+            <a href="#" class="gallery-lightbox-trigger text-decoration-none" data-image="<%= item.imagePath %>"
+              data-title="<%= item.title %>" data-description="<%= item.description %>">
+              <div class="gallery-grid-item">
+                <img src="<%= item.imagePath %>" alt="<%= item.title || 'Chakra Art Industries Gallery' %>">
+                <div class="gallery-hover-overlay">
+                  <i class="fa-solid fa-magnifying-glass-plus mb-2 fs-3 text-gold"
+                    style="color: var(--primary-gold);"></i>
+                  <h5 class="mb-1" style="font-family: var(--font-serif);">
+                    <%= item.title %>
+                  </h5>
+                  <p class="small text-white-50 mb-0">
+                    <%= item.description ? item.description.substring(0, 50) + '...' : '' %>
+                  </p>
+                </div>
               </div>
-            </div>
-          </a>
+            </a>
+          </div>
+          <% }) %>
+      </div>
+      <% } else { %>
+        <!-- Empty Gallery State -->
+        <div class="text-center py-5 border bg-white p-5 fade-in-section"
+          style="border-color: rgba(197, 168, 92, 0.2) !important;">
+          <i class="fa-regular fa-images text-muted mb-3" style="font-size: 3rem;"></i>
+          <h3 style="font-family: var(--font-serif);">No Gallery Photos Yet</h3>
+          <p class="text-secondary col-md-6 mx-auto mt-2">
+            We are currently updating our digital showcase. Check back soon to view detailed carvings and before-after
+            repainting images.
+          </p>
+          <a href="/" class="btn btn-gold mt-3">Back to Home</a>
         </div>
-      <% }) %>
-    </div>
-  <% } else { %>
-    <!-- Empty Gallery State -->
-    <div class="text-center py-5 border bg-white p-5 fade-in-section" style="border-color: rgba(197, 168, 92, 0.2) !important;">
-      <i class="fa-regular fa-images text-muted mb-3" style="font-size: 3rem;"></i>
-      <h3 style="font-family: var(--font-serif);">No Gallery Photos Yet</h3>
-      <p class="text-secondary col-md-6 mx-auto mt-2">
-        We are currently updating our digital showcase. Check back soon to view detailed carvings and before-after repainting images.
-      </p>
-      <a href="/" class="btn btn-gold mt-3">Back to Home</a>
-    </div>
-  <% } %>
-</section>
+        <% } %>
+  </section>
 
-<!-- Lightbox Modal -->
-<div id="gallery-lightbox" class="lightbox-modal">
-  <span class="lightbox-close">&times;</span>
-  <img class="lightbox-content" id="lightbox-img" alt="Enlarged View">
-  <div id="lightbox-caption" class="lightbox-caption"></div>
-</div>
+  <!-- Lightbox Modal -->
+  <div id="gallery-lightbox" class="lightbox-modal">
+    <span class="lightbox-close">&times;</span>
+    <img class="lightbox-content" id="lightbox-img" alt="Enlarged View">
+    <div id="lightbox-caption" class="lightbox-caption"></div>
+  </div>
 
-<%- include('partials/footer') %>
+  <%- include('partials/footer') %>
