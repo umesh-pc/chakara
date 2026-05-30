@@ -34,8 +34,17 @@
         </div>
         
         <div class="mb-4">
-          <label for="image" class="form-label">Select Image File</label>
+          <label for="image" class="form-label">Select Image File (Recommended: 3:4 aspect ratio)</label>
           <input type="file" class="form-control rounded-1" id="image" name="image" required accept="image/*">
+          <div id="previewContainer" class="mt-3" style="display: none;">
+            <img id="imagePreview" class="img-thumbnail" style="max-height: 200px; object-fit: cover;" alt="Preview image">
+            <div class="mt-2">
+              <button type="button" id="btn-adjust" class="btn btn-outline-primary btn-sm rounded-1">
+                <i class="fa-solid fa-crop-simple me-1"></i> Adjust / Center
+              </button>
+              <span id="badge-status" class="badge bg-secondary ms-2">Original</span>
+            </div>
+          </div>
         </div>
         
         <button type="submit" class="btn btn-primary w-100 py-2.5 rounded-1" style="background-color: var(--sidebar-bg); border-color: var(--sidebar-bg); font-weight: 600;">
@@ -81,5 +90,139 @@
   </div>
 
 </div>
+
+<!-- Cropper.js CSS & JS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+
+<!-- Crop Modal -->
+<div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content rounded-1">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title" id="cropModalLabel">
+          <i class="fa-solid fa-crop-simple me-2" style="color: var(--primary-accent);"></i>Adjust & Center Gallery Image
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4 bg-light">
+        <p class="text-secondary small mb-3">Drag and resize the crop box to center the statue. The aspect ratio is locked to 3:4 to match the front-end gallery grid.</p>
+        <div class="cropper-container-wrapper" style="max-height: 450px; background-color: #000; overflow: hidden; display: flex; justify-content: center; align-items: center; border: 1px solid var(--border-color);">
+          <img id="cropper-image" src="" style="max-width: 100%; max-height: 400px; display: block;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary rounded-1" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" id="save-crop-btn" class="btn btn-primary rounded-1" style="background-color: var(--primary-accent); border-color: var(--primary-accent); font-weight: 600;">
+          <i class="fa-solid fa-check me-1"></i> Apply Crop
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const imageInput = document.getElementById('image');
+  const previewContainer = document.getElementById('previewContainer');
+  const imagePreview = document.getElementById('imagePreview');
+  const btnAdjust = document.getElementById('btn-adjust');
+  const badgeStatus = document.getElementById('badge-status');
+  const form = imageInput.closest('form');
+  
+  let originalFile = null;
+  let croppedBlob = null;
+  let cropperInstance = null;
+  
+  const cropModalEl = document.getElementById('cropModal');
+  const cropModal = new bootstrap.Modal(cropModalEl);
+  const cropperImage = document.getElementById('cropper-image');
+  const saveCropBtn = document.getElementById('save-crop-btn');
+
+  imageInput.addEventListener('change', function() {
+    if (this.files && this.files[0]) {
+      originalFile = this.files[0];
+      croppedBlob = null;
+      badgeStatus.textContent = 'Original';
+      badgeStatus.className = 'badge bg-secondary ms-2';
+      
+      const objectUrl = URL.createObjectURL(originalFile);
+      imagePreview.src = objectUrl;
+      previewContainer.style.display = 'block';
+    } else {
+      originalFile = null;
+      croppedBlob = null;
+      previewContainer.style.display = 'none';
+    }
+  });
+
+  btnAdjust.addEventListener('click', function() {
+    if (!originalFile) return;
+    const fileToLoad = croppedBlob ? croppedBlob : originalFile;
+    cropperImage.src = URL.createObjectURL(fileToLoad);
+    cropModal.show();
+  });
+
+  cropModalEl.addEventListener('shown.bs.modal', function() {
+    if (cropperInstance) {
+      cropperInstance.destroy();
+    }
+    cropperInstance = new Cropper(cropperImage, {
+      aspectRatio: 3 / 4,
+      viewMode: 1,
+      dragMode: 'move',
+      autoCropArea: 1,
+      background: false,
+      responsive: true
+    });
+  });
+
+  cropModalEl.addEventListener('hidden.bs.modal', function() {
+    if (cropperInstance) {
+      cropperInstance.destroy();
+      cropperInstance = null;
+    }
+    cropperImage.src = '';
+  });
+
+  saveCropBtn.addEventListener('click', function() {
+    if (!cropperInstance) return;
+    
+    const canvas = cropperInstance.getCroppedCanvas({
+      width: 900,
+      height: 1200,
+      imageSmoothingEnabled: true,
+      imageSmoothingQuality: 'high'
+    });
+    
+    canvas.toBlob(function(blob) {
+      if (blob) {
+        croppedBlob = blob;
+        const objectUrl = URL.createObjectURL(blob);
+        imagePreview.src = objectUrl;
+        badgeStatus.textContent = 'Adjusted / Centered';
+        badgeStatus.className = 'badge bg-success ms-2';
+        cropModal.hide();
+      }
+    }, 'image/jpeg', 0.9);
+  });
+
+  form.addEventListener('submit', function(e) {
+    if (!croppedBlob || !originalFile) return;
+    
+    e.preventDefault();
+    
+    const dataTransfer = new DataTransfer();
+    const file = new File([croppedBlob], originalFile.name, {
+      type: 'image/jpeg',
+      lastModified: Date.now()
+    });
+    dataTransfer.items.add(file);
+    imageInput.files = dataTransfer.files;
+    
+    HTMLFormElement.prototype.submit.call(form);
+  });
+});
+</script>
 
 <%- include('partials/footer') %>

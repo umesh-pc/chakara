@@ -74,24 +74,28 @@
 
       <!-- Multiple Image upload -->
       <div class="col-12">
-        <label for="admin-image-input" class="form-label">Upload Images (Upload up to 5 images. Recommended: 4:5 aspect ratio)</label>
+        <label for="admin-image-input" class="form-label">Upload Images (Upload up to 5 images. Recommended: 3:4 aspect ratio, you can adjust/crop them below)</label>
         <input type="file" class="form-control rounded-1" id="admin-image-input" name="images" multiple <%= !product ? 'required' : '' %> accept="image/*">
         <% if (product) { %>
           <div class="form-text text-muted">Leave empty to keep existing images. Uploading new images will replace all current images.</div>
         <% } %>
         
         <!-- Live Image Previews -->
-        <div id="admin-image-preview" class="image-preview-container mt-3">
+        <div id="admin-image-preview" class="mt-3">
           <% if (product && product.images) { %>
-            <% product.images.forEach((img, idx) => { %>
-              <div class="image-preview-item">
-                <img src="<%= img %>" alt="Product Image">
-                <% if (idx === 0) { %>
-                  <span class="thumbnail-badge">Primary</span>
-                <% } %>
-              </div>
-            <% }) %>
+            <div class="mb-2 text-muted small fw-semibold">Current Product Images (saved on server):</div>
+            <div class="image-preview-container mb-3">
+              <% product.images.forEach((img, idx) => { %>
+                <div class="image-preview-item">
+                  <img src="<%= img %>" alt="Product Image">
+                  <% if (idx === 0) { %>
+                    <span class="thumbnail-badge">Primary</span>
+                  <% } %>
+                </div>
+              <% }) %>
+            </div>
           <% } %>
+          <div id="new-images-container" class="mt-2"></div>
         </div>
       </div>
 
@@ -118,5 +122,203 @@
     </div>
   </form>
 </div>
+
+<!-- Cropper.js CSS & JS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+
+<!-- Crop Modal -->
+<div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content rounded-1">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title" id="cropModalLabel">
+          <i class="fa-solid fa-crop-simple me-2" style="color: var(--primary-accent);"></i>Adjust & Center Statue Image
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4 bg-light">
+        <p class="text-secondary small mb-3">Drag and resize the crop box to center the statue. The aspect ratio is locked to 3:4 to fit perfectly on the showcase catalog pages.</p>
+        <div class="cropper-container-wrapper" style="max-height: 450px; background-color: #000; overflow: hidden; display: flex; justify-content: center; align-items: center; border: 1px solid var(--border-color);">
+          <img id="cropper-image" src="" style="max-width: 100%; max-height: 400px; display: block;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary rounded-1" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" id="save-crop-btn" class="btn btn-primary rounded-1" style="background-color: var(--primary-accent); border-color: var(--primary-accent); font-weight: 600;">
+          <i class="fa-solid fa-check me-1"></i> Apply Crop
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const imageInput = document.getElementById('admin-image-input');
+  const newImagesContainer = document.getElementById('new-images-container');
+  const form = imageInput.closest('form');
+  
+  let selectedFiles = [];
+  let croppedBlobs = [];
+  let currentCropIndex = -1;
+  let cropperInstance = null;
+  const cropModalEl = document.getElementById('cropModal');
+  const cropModal = new bootstrap.Modal(cropModalEl);
+  const cropperImage = document.getElementById('cropper-image');
+  const saveCropBtn = document.getElementById('save-crop-btn');
+  
+  // Clean up ObjectURLs
+  let objectUrls = [];
+  function clearObjectUrls() {
+    objectUrls.forEach(url => URL.revokeObjectURL(url));
+    objectUrls = [];
+  }
+  
+  imageInput.addEventListener('change', function() {
+    clearObjectUrls();
+    newImagesContainer.innerHTML = '';
+    
+    if (!this.files || this.files.length === 0) {
+      selectedFiles = [];
+      croppedBlobs = [];
+      return;
+    }
+    
+    selectedFiles = Array.from(this.files);
+    croppedBlobs = new Array(selectedFiles.length).fill(null);
+    
+    const titleDiv = document.createElement('div');
+    titleDiv.className = 'mb-2 mt-3 text-muted small fw-semibold';
+    titleDiv.textContent = 'Selected Images to Upload (Click Adjust to center statue):';
+    newImagesContainer.appendChild(titleDiv);
+    
+    selectedFiles.forEach((file, index) => {
+      const objectUrl = URL.createObjectURL(file);
+      objectUrls.push(objectUrl);
+      
+      const card = document.createElement('div');
+      card.className = 'card mb-2 p-2 d-flex flex-row align-items-center justify-content-between border rounded';
+      card.style.backgroundColor = '#fafbfc';
+      card.innerHTML = `
+        <div class="d-flex align-items-center">
+          <img id="preview-img-` + index + `" src="` + objectUrl + `" class="rounded border" style="width: 60px; height: 80px; object-fit: cover;">
+          <div class="ms-3">
+            <div class="fw-semibold text-dark text-truncate" style="max-width: 250px;">` + file.name + `</div>
+            <div id="status-badge-` + index + `" class="badge bg-secondary mt-1">Original</div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline-primary btn-sm rounded-1 crop-btn" data-index="` + index + `">
+          <i class="fa-solid fa-crop-simple me-1"></i> Adjust / Center
+        </button>
+      `;
+      newImagesContainer.appendChild(card);
+    });
+    
+    // Add click listeners to crop buttons
+    newImagesContainer.querySelectorAll('.crop-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const index = parseInt(this.getAttribute('data-index'), 10);
+        openCropper(index);
+      });
+    });
+  });
+  
+  function openCropper(index) {
+    currentCropIndex = index;
+    const file = selectedFiles[index];
+    
+    // If we already cropped it, use the cropped blob as source; otherwise, use original file.
+    const fileToLoad = croppedBlobs[index] ? croppedBlobs[index] : file;
+    const objectUrl = URL.createObjectURL(fileToLoad);
+    
+    cropperImage.src = objectUrl;
+    cropModal.show();
+  }
+  
+  cropModalEl.addEventListener('shown.bs.modal', function() {
+    if (cropperInstance) {
+      cropperInstance.destroy();
+    }
+    cropperInstance = new Cropper(cropperImage, {
+      aspectRatio: 3 / 4,
+      viewMode: 1,
+      dragMode: 'move',
+      autoCropArea: 1,
+      background: false,
+      responsive: true
+    });
+  });
+  
+  cropModalEl.addEventListener('hidden.bs.modal', function() {
+    if (cropperInstance) {
+      cropperInstance.destroy();
+      cropperInstance = null;
+    }
+    cropperImage.src = '';
+  });
+  
+  saveCropBtn.addEventListener('click', function() {
+    if (!cropperInstance || currentCropIndex === -1) return;
+    
+    // Get cropped canvas with high resolution
+    const canvas = cropperInstance.getCroppedCanvas({
+      width: 900,
+      height: 1200,
+      imageSmoothingEnabled: true,
+      imageSmoothingQuality: 'high'
+    });
+    
+    canvas.toBlob(function(blob) {
+      if (blob) {
+        croppedBlobs[currentCropIndex] = blob;
+        
+        // Update thumbnail preview
+        const previewImg = document.getElementById('preview-img-' + currentCropIndex);
+        const newImgUrl = URL.createObjectURL(blob);
+        previewImg.src = newImgUrl;
+        
+        // Update badge
+        const badge = document.getElementById('status-badge-' + currentCropIndex);
+        badge.textContent = 'Adjusted / Centered';
+        badge.className = 'badge bg-success mt-1';
+        
+        cropModal.hide();
+      }
+    }, 'image/jpeg', 0.9);
+  });
+  
+  // Intercept form submit and inject cropped files
+  form.addEventListener('submit', function(e) {
+    // If no new files are selected, let the form submit normally
+    if (selectedFiles.length === 0) return;
+    
+    e.preventDefault(); // Stop normal submission temporary
+    
+    const dataTransfer = new DataTransfer();
+    
+    selectedFiles.forEach((file, index) => {
+      const croppedBlob = croppedBlobs[index];
+      if (croppedBlob) {
+        // Convert Blob to File and preserve original name and extension
+        const croppedFile = new File([croppedBlob], file.name, {
+          type: 'image/jpeg',
+          lastModified: Date.now()
+        });
+        dataTransfer.items.add(croppedFile);
+      } else {
+        // Add original file if not cropped
+        dataTransfer.items.add(file);
+      }
+    });
+    
+    // Replace the files in file input
+    imageInput.files = dataTransfer.files;
+    
+    // Submit the form programmatically (bypass this event listener)
+    HTMLFormElement.prototype.submit.call(form);
+  });
+});
+</script>
 
 <%- include('partials/footer') %>

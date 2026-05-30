@@ -217,6 +217,13 @@ exports.postAddProduct = async (req, res, next) => {
     if (req.files) {
       req.files.forEach(file => deleteFileSafe(`/uploads/products/${file.filename}`));
     }
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      const field = error.errors[0]?.path || 'name';
+      return res.redirect(`/admin/products/new?error=A statue with this ${field} already exists. Please choose a unique name.`);
+    }
+    if (error.name === 'SequelizeValidationError') {
+      return res.redirect(`/admin/products/new?error=${encodeURIComponent(error.message)}`);
+    }
     next(error);
   }
 };
@@ -285,6 +292,12 @@ exports.postEditProduct = async (req, res, next) => {
   } catch (error) {
     if (req.files) {
       req.files.forEach(file => deleteFileSafe(`/uploads/products/${file.filename}`));
+    }
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.redirect(`/admin/products/edit/${id}?error=A statue with this name already exists. Please choose a unique name.`);
+    }
+    if (error.name === 'SequelizeValidationError') {
+      return res.redirect(`/admin/products/edit/${id}?error=${encodeURIComponent(error.message)}`);
     }
     next(error);
   }
@@ -552,6 +565,9 @@ exports.postAddRestoration = async (req, res, next) => {
       if (req.files['imageBefore']) deleteFileSafe(`/uploads/restorations/${req.files['imageBefore'][0].filename}`);
       if (req.files['imageAfter']) deleteFileSafe(`/uploads/restorations/${req.files['imageAfter'][0].filename}`);
     }
+    if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+      return res.redirect(`/admin/restorations/new?error=${encodeURIComponent(error.message)}`);
+    }
     next(error);
   }
 };
@@ -612,6 +628,9 @@ exports.postEditRestoration = async (req, res, next) => {
     if (req.files) {
       if (req.files['imageBefore']) deleteFileSafe(`/uploads/restorations/${req.files['imageBefore'][0].filename}`);
       if (req.files['imageAfter']) deleteFileSafe(`/uploads/restorations/${req.files['imageAfter'][0].filename}`);
+    }
+    if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+      return res.redirect(`/admin/restorations/edit/${id}?error=${encodeURIComponent(error.message)}`);
     }
     next(error);
   }

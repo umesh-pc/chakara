@@ -297,7 +297,7 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 .product-img-wrapper {
   position: relative;
   width: 100%;
-  padding-top: 120%; /* 4:5 aspect ratio */
+  padding-top: 133.33%; /* 3:4 aspect ratio */
   overflow: hidden;
   background-color: #f7f7f7;
 }
@@ -411,7 +411,8 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 
 .gallery-grid-item img {
   width: 100%;
-  height: 280px;
+  aspect-ratio: 3 / 4;
+  height: auto;
   object-fit: cover;
   transition: var(--transition-smooth);
 }
@@ -495,13 +496,49 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 }
 
 /* Details Page */
-.detail-img-main {
+.main-img-zoom-container {
+  position: relative;
   width: 100%;
-  height: 550px;
-  object-fit: cover;
+  max-width: 375px;
+  aspect-ratio: 3 / 4;
+  margin: 0 auto;
+  overflow: hidden;
   border: 1px solid rgba(197, 168, 92, 0.3);
   box-shadow: var(--card-shadow);
   background-color: #fff;
+}
+
+.detail-img-main {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.zoom-badge-icon {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: rgba(26, 26, 26, 0.85);
+  color: #fff;
+  border: 1px solid var(--primary-gold);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  z-index: 5;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.zoom-badge-icon:hover {
+  background-color: var(--primary-gold);
+  color: var(--text-dark);
+  transform: scale(1.1);
 }
 
 .detail-img-thumbnail {
@@ -718,7 +755,9 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 .ba-slider-container {
   position: relative;
   width: 100%;
-  height: 400px;
+  max-width: 330px;
+  aspect-ratio: 3 / 4;
+  margin: 0 auto;
   overflow: hidden;
   border: 1px solid rgba(197, 168, 92, 0.25);
   box-shadow: var(--card-shadow);

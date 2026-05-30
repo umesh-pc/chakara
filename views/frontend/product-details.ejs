@@ -15,7 +15,12 @@
     <!-- Image Gallery (Left Column) -->
     <div class="col-lg-6">
       <div class="mb-3">
-        <img id="main-product-img" src="<%= product.images[0] %>" alt="<%= product.productName %>" class="detail-img-main img-fluid">
+        <div class="main-img-zoom-container">
+          <img id="main-product-img" src="<%= product.images[0] %>" alt="<%= product.productName %>" class="detail-img-main img-fluid">
+          <div class="zoom-badge-icon">
+            <i class="fa-solid fa-magnifying-glass-plus"></i>
+          </div>
+        </div>
       </div>
       
       <!-- Thumbnail Selector -->
@@ -101,7 +106,7 @@
         <% relatedProducts.forEach(rel => { %>
           <div class="col-md-3 col-6">
             <div class="product-card h-100">
-              <div class="product-img-wrapper" style="padding-top: 110%;">
+              <div class="product-img-wrapper">
                 <img src="<%= rel.images[0] %>" alt="<%= rel.productName %>">
               </div>
               <div class="product-body p-3">
@@ -123,3 +128,80 @@
 </section>
 
 <%- include('partials/footer') %>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const mainProductImg = document.getElementById('main-product-img');
+  const zoomIcon = document.querySelector('.zoom-badge-icon');
+  const zoomContainer = document.querySelector('.main-img-zoom-container');
+  
+  if (!mainProductImg || !zoomIcon || !zoomContainer) return;
+  
+  const zoomIconInner = zoomIcon.querySelector('i');
+  let isZoomed = false;
+  
+  // Toggle zoom mode
+  function toggleZoom() {
+    isZoomed = !isZoomed;
+    if (isZoomed) {
+      // Enter Zoom Mode
+      zoomContainer.style.cursor = 'zoom-out';
+      mainProductImg.style.transform = 'scale(2.5)';
+      zoomIconInner.className = 'fa-solid fa-magnifying-glass-minus';
+      zoomIcon.style.backgroundColor = 'var(--accent-burgundy)';
+      zoomIcon.style.borderColor = 'var(--accent-burgundy)';
+    } else {
+      // Exit Zoom Mode
+      zoomContainer.style.cursor = 'zoom-in';
+      mainProductImg.style.transform = 'scale(1)';
+      mainProductImg.style.transformOrigin = 'center center';
+      zoomIconInner.className = 'fa-solid fa-magnifying-glass-plus';
+      zoomIcon.style.backgroundColor = 'rgba(26, 26, 26, 0.85)';
+      zoomIcon.style.borderColor = 'var(--primary-gold)';
+    }
+  }
+  
+  zoomIcon.addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggleZoom();
+  });
+  
+  // If clicked anywhere inside the container when zoomed, zoom out
+  zoomContainer.addEventListener('click', function() {
+    if (isZoomed) {
+      toggleZoom();
+    }
+  });
+  
+  // Follow mouse movement when zoomed to inspect specific parts
+  zoomContainer.addEventListener('mousemove', function(e) {
+    if (!isZoomed) return;
+    
+    const rect = this.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    
+    mainProductImg.style.transformOrigin = x + '% ' + y + '%';
+  });
+  
+  // Automatically exit zoom when mouse leaves
+  zoomContainer.addEventListener('mouseleave', function() {
+    if (isZoomed) {
+      toggleZoom();
+    }
+  });
+  
+  // Touch support for mobile panning
+  zoomContainer.addEventListener('touchmove', function(e) {
+    if (!isZoomed) return;
+    if (e.touches && e.touches.length === 1) {
+      const rect = this.getBoundingClientRect();
+      const x = ((e.touches[0].clientX - rect.left) / rect.width) * 100;
+      const y = ((e.touches[0].clientY - rect.top) / rect.height) * 100;
+      
+      mainProductImg.style.transformOrigin = x + '% ' + y + '%';
+      e.preventDefault(); // Stop page scrolling during pan drag
+    }
+  }, { passive: false });
+});
+</script>

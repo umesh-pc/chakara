@@ -179,7 +179,7 @@ exports.getRestorations = async (req, res, next) => {
   try {
     const restorations = await Restoration.findAll({ order: [['createdAt', 'DESC']] });
     res.render('frontend/restorations', {
-      meta: getMeta("Restoration Showcase", "View the transformation of vintage and weathered church statues with our professional before-and-after repainting works."),
+      meta: getMeta("Restoration Showcase", "View the transformation of weathered church statues with our professional before-and-after repainting works."),
       restorations
     });
   } catch (error) {
